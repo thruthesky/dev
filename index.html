@@ -1,25 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com 'unsafe-inline'; style-src * 'unsafe-inline'; media-src *">
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/layout.css">
+
+
     <title>Hello World</title>
 </head>
 <body>
+
 <div class="page">
     <header>This is headers</header>
     <section class="content">
         <h1>Hello, app</h1>
         This is content.
+        <form>
+            Name : <input name="name"><br>
+            Address : <input name="address"><br>
+            <input type="submit" value="SAVE">
+        </form>
+        <div class="show">SHOW</div>
     </section>
     <footer>This is footer</footer>
 </div>
+
 <script type="text/javascript" src="cordova.js"></script>
 <script type="text/javascript" src="js/layout.js"></script>
 <script src="js/jquery-2.2.0.min.js"></script>
 <script src="js/underscore-min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>
+
+
+<script>
+    $(function(){
+
+        $("form").submit( function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            var url = "http://mongodb.philgo.net/index.php";
+            url += '?command=withcenter.employee.insert';
+            url += '&document[name]=' + $this.find("[name='name']").val();
+            url += '&document[address]=' + $this.find("[name='address']").val();
+            console.log(url);
+            $.ajax( {
+                url: url,
+                //data: $this.serialize(),
+                success : function (re) {
+                    console.log("success: " + re);
+                },
+                error : function (re) {
+                    console.log("error: " + re);
+                }
+            } );
+        });
+
+        $(".show").click(function(){
+
+            var url = "http://mongodb.philgo.net/index.php";
+            url += "?command=withcenter.employee.find";
+            console.log(url);
+            $.ajax( {
+                url: url,
+                //data: $this.serialize(),
+                success : function (re) {
+                    //console.log("success: " + re);
+                    var data = JSON.parse(re);
+                    var document = data['document'];
+                    console.log(document);
+                    var m = '';
+                    for ( var i in document ) {
+                        var emp = document[i];
+                        m += "<div>" + emp.name + " : "+emp.address+"</div>";
+                    }
+                    m = "<div class='employee-list'>" + m + "</div>";
+                    $(".employee-list").remove();
+                    $('body').append(m);
+                },
+                error : function (re) {
+                    console.log("error: " + re);
+                }
+            } );
+
+        });
+
+    });
+
+</script>
 </body>
 </html>
