@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script>
+
+        $(function(){
+            $("form").submit( function(e) {
+                e.preventDefault();
+                var $this = $(this);
+                var url = "http://mongodb.philgo.net/index.php";
+
+                url += '?command=' + $this.find("[name='command']").val();
+                var v = $this.find("[name='query']").val();
+                if ( v ) url += '&' + v;
+                v = $this.find("[name='op']").val();
+                if ( v ) url += '&op=' + v;
+                v = $this.find("[name='document']").val();
+                if ( v ) url += '&' + v;
+
+
+
+                if ( v ) url += v;
+                v = $this.find("[name='sort']").val();
+
+                v = $this.find("[name='skip']").val();
+                if ( v ) url += '&skip=' + v;
+
+
+                v = $this.find("[name='limit']").val();
+                if ( v ) url += '&limit=' + v;
+
+                console.log(url);
+                $.ajax( {
+                    url: url,
+                    //data: $this.serialize(),
+                    success : function (re) {
+                        console.log("success: " + re);
+                    },
+                    error : function (re) {
+                        console.log("error: " + re);
+                    }
+                } );
+            });
+        });
+    </script>
+</head>
+<body>
+
+<h1>Get JSON DATA</h1>
+
+<form>
+    <input type="text" name="command" style="width:100%;" placeholder="Command"><br>
+    <input type="text" name="op" style="width:12em;" placeholder="Update Operators"><br>
+    <input type="text" name="query" style="width:100%;" placeholder="Query" value=""><br>
+    <textarea name="document" style="width:100%;" placeholder="Documents : document[first]=Jaeho&document[last]=Song"></textarea>
+
+    <input type="text" name="skip" style="width:4em;" placeholder="Skip">
+    <input type="text" name="limit" style="width:4em;" placeholder="Limit">
+    <input type="text" name="sort" style="width:16em;" placeholder="Sort">
+    <br>
+
+    <br>
+    <input type="submit">
+</form>
+
+<ul>
+    <li>
+        Command lie below:<br>
+        company.call.insert
+    </li>
+    <li>
+        Query like below:<br>
+        example) query[name]=jaeho<br>
+        example) query[name]=jaeho&query[address]=gimhae<br>
+    </li>
+    <li>
+        Document like below:<br>
+        document[name]=jaeho, song&document[address]=gimhae
+    </li>
+    <li>
+        Sort like below : <br>
+        &sort[name]=1&sort[address]=-1
+    </li>
+</ul>
+
+
+</body>
+</html>
