@@ -20,8 +20,9 @@
         <h1>Hello, app</h1>
         This is content.
         <form>
-            Name : <input name="name"><br>
-            Address : <input name="address"><br>
+            Username : <input name="name"><br>
+            Password : <input name="password"><br>
+            Email : <input name="email"><br>
             <input type="submit" value="SAVE">
         </form>
         <div class="show">SHOW</div>
@@ -37,21 +38,23 @@
 
 
 <script>
+    var url_server_endpoint = 'http://work.org/backend/index.php';
     $(function(){
 
         $("form").submit( function(e) {
             e.preventDefault();
             var $this = $(this);
-            var url = "http://mongodb.philgo.net/index.php";
-            url += '?command=withcenter.employee.insert';
-            url += '&document[name]=' + $this.find("[name='name']").val();
-            url += '&document[address]=' + $this.find("[name='address']").val();
+            var url = url_server_endpoint;
+            url += '?route=user.Controller.register';
+            url += '&username=' + $this.find("[name='name']").val();
+            url += '&password=' + $this.find("[name='password']").val();
+            url += '&email=' + $this.find("[name='email']").val();
             console.log(url);
             $.ajax( {
                 url: url,
                 //data: $this.serialize(),
                 success : function (re) {
-                    console.log("success: " + re);
+                    //console.log("success: " + re);
                 },
                 error : function (re) {
                     console.log("error: " + re);
@@ -60,25 +63,27 @@
         });
 
         $(".show").click(function(){
-
-            var url = "http://mongodb.philgo.net/index.php";
-            url += "?command=withcenter.employee.find";
+            var url = url_server_endpoint;
+            url += '?route=user.Controller.collect';
             console.log(url);
             $.ajax( {
                 url: url,
                 //data: $this.serialize(),
                 success : function (re) {
-                    //console.log("success: " + re);
-                    var data = JSON.parse(re);
-                    var document = data['document'];
-                    console.log(document);
-                    var m = '';
-                    for ( var i in document ) {
-                        var emp = document[i];
-                        m += "<div>" + emp.name + " : "+emp.address+"</div>";
+                    console.log("response from server:");
+                    console.log(re);
+                    var p = JSON.parse(re);
+                    if ( p['code'] ) {
+                        return;
                     }
-                    m = "<div class='employee-list'>" + m + "</div>";
-                    $(".employee-list").remove();
+                    var data = p['data'];
+                    var m = '';
+                    for ( var i in data ) {
+                        var user = data[i];
+                        m += "<div>" + user.username + " : "+user.email+"</div>";
+                    }
+                    m = "<div class='user-list'>" + m + "</div>";
+                    $(".user-list").remove();
                     $('body').append(m);
                 },
                 error : function (re) {
